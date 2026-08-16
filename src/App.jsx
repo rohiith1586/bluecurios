@@ -16,7 +16,7 @@ import Account from "./pages/Account";
 import Wishlist from "./pages/Wishlist";
 import Journal from "./pages/Journal";
 import Admin from "./pages/Admin";
-import Login from "./pages/Login";
+import Login from "./pages/login";
 
 export default function App() {
   return (
