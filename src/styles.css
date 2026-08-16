@@ -2415,3 +2415,107 @@ h2 em {
     display: none;
   }
 }
+/* =========================================================
+   CART OVERLAP FIX
+   Prevent product images from overflowing into the summary
+========================================================= */
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.7fr);
+  gap: 7vw;
+  align-items: start;
+}
+
+.cart-layout > * {
+  min-width: 0;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) auto auto;
+  gap: 20px;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.cart-item > img {
+  display: block;
+  width: 100%;
+  max-width: 100px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.cart-item .image-placeholder {
+  width: 100px;
+  min-width: 0;
+  min-height: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.cart-item > * {
+  min-width: 0;
+}
+
+.summary {
+  position: sticky;
+  top: 110px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: max-content;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Make sure product images can never escape their container */
+.cart-item img,
+.cart-item picture,
+.cart-item picture img {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CART MOBILE FIX
+========================================================= */
+
+@media (max-width: 900px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .summary {
+    position: static;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .cart-item {
+    grid-template-columns: 75px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .cart-item > img {
+    width: 75px;
+    max-width: 75px;
+    height: 95px;
+  }
+
+  .cart-item .image-placeholder {
+    width: 75px;
+    min-height: 95px;
+    height: 95px;
+  }
+
+  .summary {
+    padding: 20px;
+  }
+}
