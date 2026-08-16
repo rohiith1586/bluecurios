@@ -1,0 +1,2 @@
+import React from "react";
+export default function Journal(){return <section className="section journal"><div className="narrow"><span className="eyebrow">The journal</span><h1>Notes from the studio.</h1><p className="lead">A place for making stories, materials, process notes and behind-the-scenes pieces. Publish real editorial content here when you're ready.</p><div className="empty-state"><h2>Your first story is waiting.</h2><p>No articles have been published yet.</p></div></div></section>}
