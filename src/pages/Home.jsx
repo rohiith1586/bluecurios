@@ -34,7 +34,39 @@ export default function Home() {
 
     <section className="section">
       <SectionHeading eyebrow="Explore the studio" title="A little something for every kind of curious." text="Browse by mood, moment or the thing you've been looking for."/>
-      <div className="collection-grid">{collections.map(([name, desc, key], i)=><Link className="collection-card" to={`/shop?category=${key}`} key={key}><span>0{i+1}</span><div className="collection-art">Image placeholder</div><div><h3>{name}</h3><p>{desc}</p></div><ArrowUpRight size={19}/></Link>)}</div>
+      <div className="collection-grid">
+  {collections.map(([name, desc, key], i) => {
+    const images = [
+      "/images/crochet-bags.jpg",
+      "/images/crochet-clothing.jpg",
+      "/images/accessories.jpg",
+      "/images/home-lifestyle.jpg",
+      "/images/new-arrivals.jpg",
+      "/images/custom-creation.jpg",
+    ];
+
+    return (
+      <Link
+        className="collection-card"
+        to={`/shop?category=${key}`}
+        key={key}
+      >
+        <span>0{i + 1}</span>
+
+        <div className="collection-art">
+          <img src={images[i]} alt={name} />
+        </div>
+
+        <div>
+          <h3>{name}</h3>
+          <p>{desc}</p>
+        </div>
+
+        <ArrowUpRight size={19} />
+      </Link>
+    );
+  })}
+</div>
     </section>
 
     <section className="section soft">
