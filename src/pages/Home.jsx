@@ -24,10 +24,10 @@ export default function Home() {
   return <div>
     <section className="hero">
       <div className="hero-copy">
-        <span className="eyebrow">Handmade · Small batch · BlueCurious</span>
+        <span className="eyebrow">Handmade · Small batch · BlueCurios</span>
         <h1>Made by Hand.<br/><em>Made to Be Yours.</em></h1>
         <p>Thoughtfully crafted crochet pieces made with creativity, patience, and a little bit of curiosity.</p>
-        <div className="hero-actions"><Link className="btn primary" to="/shop">Shop Collection <ArrowUpRight size={17}/></Link><Link className="btn secondary" to="/#story">Explore BlueCurious</Link></div>
+        <div className="hero-actions"><Link className="btn primary" to="/shop">Shop Collection <ArrowUpRight size={17}/></Link><Link className="btn secondary" to="/#story">Explore BlueCurios</Link></div>
       </div>
       <div className="hero-art"><div className="image-placeholder large">Hero lifestyle photography<br/>to be added</div><div className="hero-note">01 — made slowly</div></div>
     </section>
@@ -76,7 +76,7 @@ export default function Home() {
 
     <section className="story section" id="story">
       <div className="story-image image-placeholder large">Lifestyle image<br/>to be added</div>
-      <div className="story-copy"><span className="eyebrow">Why BlueCurious?</span><h2>Not factory-perfect.<br/><em>Human-perfect.</em></h2><p>Every BlueCurious piece is handmade with attention to detail, so no two pieces feel exactly the same. The tiny variations are part of the story.</p><p>We're building a slower kind of fashion and lifestyle brand — one stitch, one idea, one curious object at a time.</p><Link className="text-link" to="/journal">Read our story <ArrowUpRight size={16}/></Link></div>
+      <div className="story-copy"><span className="eyebrow">Why BlueCurios?</span><h2>Not factory-perfect.<br/><em>Human-perfect.</em></h2><p>Every BlueCurios piece is handmade with attention to detail, so no two pieces feel exactly the same. The tiny variations are part of the story.</p><p>We're building a slower kind of fashion and lifestyle brand — one stitch, one idea, one curious object at a time.</p><Link className="text-link" to="/journal">Read our story <ArrowUpRight size={16}/></Link></div>
     </section>
 
     <section className="section promise">
@@ -96,11 +96,11 @@ export default function Home() {
     </section>
 
     <section className="section testimonials">
-      <SectionHeading eyebrow="Kind words" title="A space for your customers' stories." text="Replace this placeholder with verified reviews after launch. BlueCurious does not publish invented testimonials." align="center"/>
+      <SectionHeading eyebrow="Kind words" title="A space for your customers' stories." text="Replace this placeholder with verified reviews after launch. BlueCurios does not publish invented testimonials." align="center"/>
       <div className="review-placeholder"><Check size={19}/><p>Verified customer reviews will appear here.</p></div>
     </section>
 
-    <section className="section instagram"><SectionHeading eyebrow="@bluecurious" title="A curious little corner of the internet." align="center"/><div className="social-grid">{[1,2,3,4,5,6].map(n=><div className="social-placeholder" key={n}>Social image {n}<small>Connect your social feed</small></div>)}</div></section>
+    <section className="section instagram"><SectionHeading eyebrow="@bluecurios" title="A curious little corner of the internet." align="center"/><div className="social-grid">{[1,2,3,4,5,6].map(n=><div className="social-placeholder" key={n}>Social image {n}<small>Connect your social feed</small></div>)}</div></section>
 
     <section className="newsletter"><span className="eyebrow">Stay Curious.</span><h2>New things, occasionally.</h2><p>Get first access to new drops, limited handmade pieces and special offers.</p><form onSubmit={e=>e.preventDefault()}><input type="email" required placeholder="Your email address" aria-label="Email address"/><button className="btn primary">Subscribe</button></form></section>
   </div>
