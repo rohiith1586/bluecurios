@@ -2545,3 +2545,101 @@ h2 em {
   object-fit: cover;
   border-radius: 16px;
 }
+```css
+/* =========================================================
+   CUSTOM IMAGE UPLOAD
+========================================================= */
+
+.upload {
+  position: relative;
+  min-height: 130px;
+  border: 1px dashed var(--blue);
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--blue-deep);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.upload:hover {
+  border-color: var(--blue-deep);
+  background: var(--blue-pale);
+}
+
+.upload > input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-preview {
+  position: relative;
+  width: 100%;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.upload-preview img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.upload-preview-info {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 60px);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--blue-dark);
+  font-size: 11px;
+  overflow: hidden;
+}
+
+.upload-preview-info span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--blue-dark);
+  border: 1px solid var(--line);
+  z-index: 3;
+}
+
+.upload-remove:hover {
+  background: var(--blue-pale);
+}
+```
