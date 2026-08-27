@@ -2545,7 +2545,7 @@ h2 em {
   object-fit: cover;
   border-radius: 16px;
 }
-```css
+
 /* =========================================================
    CUSTOM IMAGE UPLOAD
 ========================================================= */
@@ -2642,4 +2642,30 @@ h2 em {
 .upload-remove:hover {
   background: var(--blue-pale);
 }
-```
+
+.admin-custom-request-image {
+  margin-top: 20px;
+}
+
+.custom-request-image-wrapper {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.custom-request-reference-image {
+  display: block;
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  max-height: 450px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.custom-request-image-error {
+  margin-top: 10px;
+  padding: 12px;
+}

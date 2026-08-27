@@ -4464,20 +4464,20 @@ useEffect(() => {
               type="button"
               className={
                 active ===
-                "Custom requests"
+                "Custom Requests"
                   ? "active"
                   : ""
               }
               onClick={() =>
                 changeSection(
-                  "Custom requests"
+                  "Custom Requests"
                 )
               }
             >
               <Package
                 size={17}
               />
-              Custom requests
+              Custom Requests
             </button>
 
             <button
@@ -5718,7 +5718,8 @@ useEffect(() => {
     CUSTOM REQUESTS
 ========================================= */}
 
-{active === "Custom requests" && (
+              
+{active === "Custom Requests" && (
   <div>
     <div className="admin-page-heading">
       <div>
@@ -5732,13 +5733,21 @@ useEffect(() => {
       </div>
     </div>
 
+    {/* LOADING */}
+
     {loadingCustomRequests && (
       <div className="admin-placeholder">
         <Package size={30} />
+
         <h3>Loading custom requests...</h3>
-        <p>Please wait while requests are loaded.</p>
+
+        <p>
+          Please wait while requests are loaded.
+        </p>
       </div>
     )}
+
+    {/* ERROR */}
 
     {customRequestError && (
       <p className="admin-error">
@@ -5746,17 +5755,23 @@ useEffect(() => {
       </p>
     )}
 
+    {/* EMPTY STATE */}
+
     {!loadingCustomRequests &&
       !customRequestError &&
       customRequests.length === 0 && (
         <div className="admin-placeholder">
           <Package size={30} />
+
           <h3>No custom requests yet</h3>
+
           <p>
             Customer submissions will appear here.
           </p>
         </div>
       )}
+
+    {/* CUSTOM REQUESTS */}
 
     {!loadingCustomRequests &&
       !customRequestError &&
@@ -5767,12 +5782,14 @@ useEffect(() => {
               key={request.id}
               className="admin-custom-request-card"
             >
+              {/* ======================================
+                  HEADER
+              ======================================= */}
+
               <div className="admin-custom-request-header">
                 <div>
                   <h3>
-                    {request.name ||
-                      request.customer_name ||
-                      "Customer"}
+                    {request.name || "Customer"}
                   </h3>
 
                   <p>
@@ -5780,8 +5797,10 @@ useEffect(() => {
                   </p>
                 </div>
 
+                {/* STATUS */}
+
                 <select
-                  value={request.status || "pending"}
+                  value={request.status || "new"}
                   onChange={(event) =>
                     updateCustomRequestStatus(
                       request.id,
@@ -5789,12 +5808,16 @@ useEffect(() => {
                     )
                   }
                 >
-                  <option value="pending">
-                    Pending
+                  <option value="new">
+                    New
                   </option>
 
                   <option value="reviewing">
                     Reviewing
+                  </option>
+
+                  <option value="quoted">
+                    Quoted
                   </option>
 
                   <option value="approved">
@@ -5811,14 +5834,24 @@ useEffect(() => {
                 </select>
               </div>
 
+              {/* ======================================
+                  REQUEST DETAILS
+              ======================================= */}
+
               <div className="admin-custom-request-body">
-                <p>
-                  <strong>Request:</strong>{" "}
-                  {request.request ||
-                    request.message ||
-                    request.description ||
-                    "No request details provided."}
-                </p>
+
+                {/* REQUEST */}
+
+                <div className="custom-request-detail">
+                  <strong>Request:</strong>
+
+                  <p className="custom-request-text">
+                    {request.request ||
+                      "No request details provided."}
+                  </p>
+                </div>
+
+                {/* PHONE */}
 
                 {request.phone && (
                   <p>
@@ -5826,6 +5859,87 @@ useEffect(() => {
                     {request.phone}
                   </p>
                 )}
+
+                {/* BUDGET */}
+
+                {request.budget !== null &&
+                  request.budget !== undefined && (
+                    <p>
+                      <strong>Budget:</strong>{" "}
+                      ₹
+                      {Number(
+                        request.budget
+                      ).toLocaleString("en-IN")}
+                    </p>
+                  )}
+
+                {/* ==================================
+                    REFERENCE IMAGE
+                =================================== */}
+
+                {request.image_url ? (
+                  <div className="admin-custom-request-image">
+                    <strong>
+                      Reference image:
+                    </strong>
+
+                    <div className="custom-request-image-wrapper">
+                      <img
+                        src={request.image_url}
+                        alt="Customer reference"
+                        className="custom-request-reference-image"
+                        loading="lazy"
+                        onLoad={() => {
+                          console.log(
+                            "ADMIN IMAGE LOADED:",
+                            request.image_url
+                          );
+                        }}
+                        onError={(event) => {
+                          console.error(
+                            "ADMIN IMAGE LOAD ERROR:",
+                            request.image_url
+                          );
+
+                          event.currentTarget.style.display =
+                            "none";
+
+                          const errorMessage =
+                            event.currentTarget
+                              .parentElement
+                              ?.querySelector(
+                                ".custom-request-image-error"
+                              );
+
+                          if (errorMessage) {
+                            errorMessage.style.display =
+                              "block";
+                          }
+                        }}
+                      />
+
+                      <p
+                        className="custom-request-image-error"
+                        style={{
+                          display: "none",
+                        }}
+                      >
+                        Unable to load the reference image.
+                        Please check the Supabase Storage
+                        permissions.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p>
+                    <strong>
+                      Reference image:
+                    </strong>{" "}
+                    No image provided.
+                  </p>
+                )}
+
+                {/* SUBMITTED DATE */}
 
                 {request.created_at && (
                   <p>
@@ -5844,7 +5958,6 @@ useEffect(() => {
 )}
 
                   
-
             {/* =================================================
                 COUPONS
             ================================================= */}

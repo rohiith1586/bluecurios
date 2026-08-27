@@ -1,12 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-console.log("SUPABASE URL:", url);
-console.log("SUPABASE KEY EXISTS:", !!anonKey);
+const anonKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export const supabase =
-  url && anonKey ? createClient(url, anonKey) : null;
-
-console.log("SUPABASE CLIENT:", supabase);
+  url && anonKey
+    ? createClient(url, anonKey)
+    : null;

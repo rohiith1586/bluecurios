@@ -1,457 +1,504 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
-
+import React, { useEffect, useState } from "react";
 import {
-  Package,
   RefreshCw,
-  Trash2,
+  ExternalLink,
+  Clock,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
-
 import { supabase } from "../lib/supabase";
 
-const STATUSES = [
-  "new",
-  "reviewing",
-  "quoted",
-  "approved",
-  "completed",
-  "rejected",
-];
-
 export default function AdminRequests() {
-  const [requests, setRequests] =
-    useState([]);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const loadRequests = async () => {
+    if (!supabase) {
+      console.error("Supabase is not connected.");
+      setLoading(false);
+      return;
+    }
 
-  const [error, setError] =
-    useState("");
-
-  useEffect(() => {
-    loadRequests();
-  }, []);
-
-  async function loadRequests() {
     setLoading(true);
-    setError("");
 
-    const { data, error } =
-      await supabase
+    try {
+      const { data, error } = await supabase
         .from("custom_requests")
         .select("*")
         .order("created_at", {
           ascending: false,
         });
 
-    if (error) {
-      console.error(
-        "CUSTOM REQUESTS ERROR:",
-        error
-      );
+      if (error) {
+        console.error("LOAD REQUESTS ERROR:", error);
+        throw error;
+      }
 
-      setError(error.message);
-      setRequests([]);
-    } else {
       setRequests(data || []);
+    } catch (error) {
+      console.error(error);
+      alert(
+        error?.message ||
+          "Could not load custom requests."
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
-  }
+  useEffect(() => {
+    loadRequests();
+  }, []);
 
-  async function updateStatus(
-    id,
-    status
-  ) {
-    const { error } =
-      await supabase
+  const updateStatus = async (id, status) => {
+    if (!supabase) return;
+
+    setUpdatingId(id);
+
+    try {
+      const { error } = await supabase
         .from("custom_requests")
         .update({
           status,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", id);
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
+      if (error) {
+        console.error("UPDATE STATUS ERROR:", error);
+        throw error;
+      }
 
-    setRequests((current) =>
-      current.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              status,
-            }
-          : request
-      )
-    );
-  }
-
-  async function updateNotes(
-    id,
-    admin_notes
-  ) {
-    const { error } =
-      await supabase
-        .from("custom_requests")
-        .update({
-          admin_notes,
-        })
-        .eq("id", id);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    setRequests((current) =>
-      current.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              admin_notes,
-            }
-          : request
-      )
-    );
-  }
-
-  async function deleteRequest(
-    request
-  ) {
-    const confirmed =
-      window.confirm(
-        `Delete the custom request from ${request.name}?`
+      setRequests((prev) =>
+        prev.map((request) =>
+          request.id === id
+            ? {
+                ...request,
+                status,
+              }
+            : request
+        )
       );
 
-    if (!confirmed) return;
+    } catch (error) {
+      console.error(error);
 
-    const { error } =
-      await supabase
-        .from("custom_requests")
-        .delete()
-        .eq("id", request.id);
-
-    if (error) {
-      alert(error.message);
-      return;
+      alert(
+        error?.message ||
+          "Could not update request."
+      );
+    } finally {
+      setUpdatingId(null);
     }
+  };
 
-    setRequests((current) =>
-      current.filter(
-        (item) =>
-          item.id !== request.id
-      )
+  const formatDate = (date) => {
+    if (!date) return "—";
+
+    return new Date(date).toLocaleString(
+      "en-IN",
+      {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }
     );
-  }
+  };
 
-  if (loading) {
-    return (
-      <Box>
-        Loading custom requests...
-      </Box>
-    );
-  }
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "approved":
+        return "request-status approved";
 
-  if (error) {
-    return (
-      <Box>
-        <h2>Custom requests</h2>
+      case "completed":
+        return "request-status completed";
 
-        <p>{error}</p>
+      case "rejected":
+        return "request-status rejected";
 
-        <button
-          type="button"
-          onClick={loadRequests}
-          style={buttonStyle}
-        >
-          Try again
-        </button>
-      </Box>
-    );
-  }
+      default:
+        return "request-status pending";
+    }
+  };
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-          marginBottom: 25,
-          flexWrap: "wrap",
-          gap: 15,
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            color: "#65757c",
-            fontSize: 18,
-          }}
-        >
-          Review and manage custom
-          crochet requests.
-        </p>
+    <section className="section admin-requests-page">
 
-        <button
-          type="button"
-          onClick={loadRequests}
-          style={buttonStyle}
-        >
-          <RefreshCw size={15} />
-          Refresh
-        </button>
-      </div>
+      <div className="narrow">
 
-      {requests.length === 0 ? (
-        <Box>
-          <Package size={30} />
-
-          <h2>No requests yet.</h2>
-
-          <p>
-            New custom requests will
-            appear here.
-          </p>
-        </Box>
-      ) : (
         <div
           style={{
-            display: "grid",
-            gap: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "20px",
+            marginBottom: "30px",
           }}
         >
-          {requests.map((request) => (
-            <div
-              key={request.id}
-              style={cardStyle}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent:
-                    "space-between",
-                  gap: 20,
-                  flexWrap: "wrap",
-                }}
+
+          <div>
+            <span className="eyebrow">
+              Customer enquiries
+            </span>
+
+            <h1>
+              Custom Requests.
+            </h1>
+
+            <p className="lead">
+              Review custom crochet requests submitted
+              by customers.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="btn secondary"
+            onClick={loadRequests}
+            disabled={loading}
+          >
+            <RefreshCw size={17} />
+
+            {loading
+              ? "Loading..."
+              : "Refresh"}
+          </button>
+
+        </div>
+
+
+        {/* LOADING */}
+
+        {loading && (
+          <div className="form-card">
+            <p>Loading custom requests...</p>
+          </div>
+        )}
+
+
+        {/* EMPTY */}
+
+        {!loading && requests.length === 0 && (
+          <div className="form-card">
+
+            <h3>
+              No custom requests yet.
+            </h3>
+
+            <p>
+              When a customer submits the custom
+              request form, it will appear here.
+            </p>
+
+          </div>
+        )}
+
+
+        {/* REQUESTS */}
+
+        {!loading && requests.length > 0 && (
+
+          <div
+            style={{
+              display: "grid",
+              gap: "24px",
+            }}
+          >
+
+            {requests.map((request) => (
+
+              <article
+                key={request.id}
+                className="form-card"
               >
-                <div>
-                  <h3
-                    style={{
-                      margin: 0,
-                    }}
-                  >
-                    {request.name}
-                  </h3>
 
-                  <p
-                    style={{
-                      color: "#65757c",
-                      margin:
-                        "6px 0",
-                    }}
-                  >
-                    {request.email ||
-                      "No email"}
-                    {" · "}
-                    {request.phone ||
-                      "No phone"}
-                  </p>
+                {/* HEADER */}
 
-                  <small
-                    style={{
-                      color: "#718087",
-                    }}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: "20px",
+                    marginBottom: "20px",
+                  }}
+                >
+
+                  <div>
+
+                    <span className="eyebrow">
+                      Custom request
+                    </span>
+
+                    <h2>
+                      {request.name ||
+                        "Unnamed customer"}
+                    </h2>
+
+                    <p>
+                      {formatDate(
+                        request.created_at
+                      )}
+                    </p>
+
+                  </div>
+
+
+                  <span
+                    className={getStatusClass(
+                      request.status
+                    )}
                   >
-                    {request.created_at
-                      ? new Date(
-                          request.created_at
-                        ).toLocaleString(
-                          "en-IN"
-                        )
-                      : ""}
-                  </small>
+                    {request.status ||
+                      "new"}
+                  </span>
+
                 </div>
 
-                <select
-                  value={
-                    request.status ||
-                    "new"
-                  }
-                  onChange={(event) =>
-                    updateStatus(
-                      request.id,
-                      event.target.value
-                    )
-                  }
-                  style={selectStyle}
-                >
-                  {STATUSES.map(
-                    (status) => (
-                      <option
-                        key={status}
-                        value={status}
-                      >
-                        {status
-                          .charAt(0)
-                          .toUpperCase() +
-                          status.slice(1)}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
 
-              <div
-                style={{
-                  marginTop: 20,
-                  padding: 18,
-                  borderRadius: 14,
-                  background: "#f7f4ee",
-                }}
-              >
-                <strong>
-                  Request
-                </strong>
+                {/* CUSTOMER */}
 
-                <p
+                <div
                   style={{
-                    whiteSpace:
-                      "pre-wrap",
-                    lineHeight: 1.6,
-                    marginBottom: 0,
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(220px, 1fr))",
+                    gap: "16px",
+                    marginBottom: "24px",
                   }}
                 >
-                  {request.request}
-                </p>
-              </div>
 
-              <div
-                style={{
-                  marginTop: 15,
-                  color: "#65757c",
-                }}
-              >
-                Budget:{" "}
-                <strong>
-                  ₹
-                  {Number(
-                    request.budget || 0
-                  ).toLocaleString(
-                    "en-IN"
-                  )}
-                </strong>
-              </div>
+                  <div>
+                    <strong>
+                      Email
+                    </strong>
 
-              <label
-                style={{
-                  display: "block",
-                  marginTop: 18,
-                  fontWeight: 700,
-                }}
-              >
-                Admin notes
+                    <p>
+                      {request.email || "—"}
+                    </p>
+                  </div>
 
-                <textarea
-                  defaultValue={
-                    request.admin_notes ||
-                    ""
-                  }
-                  onBlur={(event) =>
-                    updateNotes(
-                      request.id,
-                      event.target.value
-                    )
-                  }
-                  rows={3}
-                  placeholder="Internal notes..."
+
+                  <div>
+                    <strong>
+                      Phone
+                    </strong>
+
+                    <p>
+                      {request.phone || "—"}
+                    </p>
+                  </div>
+
+
+                  <div>
+                    <strong>
+                      Budget
+                    </strong>
+
+                    <p>
+                      {request.budget
+                        ? `₹${Number(
+                            request.budget
+                          ).toLocaleString("en-IN")}`
+                        : "Not specified"}
+                    </p>
+                  </div>
+
+                </div>
+
+
+                {/* REQUEST DETAILS */}
+
+                <div
                   style={{
-                    display: "block",
-                    width: "100%",
-                    boxSizing:
-                      "border-box",
-                    marginTop: 7,
-                    border:
-                      "1px solid #d8d3ca",
-                    borderRadius: 10,
-                    padding: 12,
-                    resize: "vertical",
-                    fontFamily:
-                      "inherit",
-                  }}
-                />
-              </label>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent:
-                    "flex-end",
-                  marginTop: 15,
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    deleteRequest(
-                      request
-                    )
-                  }
-                  style={{
-                    ...buttonStyle,
-                    background:
-                      "#fcebea",
-                    color: "#a52820",
+                    marginBottom: "24px",
                   }}
                 >
-                  <Trash2 size={15} />
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+
+                  <strong>
+                    Request details
+                  </strong>
+
+                  <div
+                    style={{
+                      whiteSpace: "pre-wrap",
+                      marginTop: "10px",
+                      lineHeight: "1.7",
+                    }}
+                  >
+                    {request.request ||
+                      "No details provided."}
+                  </div>
+
+                </div>
+
+
+                {/* IMAGE */}
+
+                {request.image_url && (
+
+                  <div
+                    style={{
+                      marginBottom: "24px",
+                    }}
+                  >
+
+                    <strong>
+                      Reference image
+                    </strong>
+
+                    <div
+                      style={{
+                        marginTop: "12px",
+                      }}
+                    >
+
+                      <img
+                        src={request.image_url}
+                        alt="Customer reference"
+                        style={{
+                          width: "100%",
+                          maxWidth: "500px",
+                          maxHeight: "500px",
+                          objectFit: "contain",
+                          borderRadius: "12px",
+                          display: "block",
+                          border:
+                            "1px solid #ddd",
+                        }}
+                      />
+
+                    </div>
+
+                    <a
+                      href={request.image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn secondary"
+                      style={{
+                        display: "inline-flex",
+                        marginTop: "12px",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      Open Image
+                      <ExternalLink size={16} />
+                    </a>
+
+                  </div>
+
+                )}
+
+
+                {/* STATUS */}
+
+                <div
+                  style={{
+                    borderTop:
+                      "1px solid #ddd",
+                    paddingTop: "20px",
+                  }}
+                >
+
+                  <strong>
+                    Update status
+                  </strong>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "10px",
+                      marginTop: "12px",
+                    }}
+                  >
+
+                    <button
+                      type="button"
+                      className="btn secondary"
+                      disabled={
+                        updatingId === request.id
+                      }
+                      onClick={() =>
+                        updateStatus(
+                          request.id,
+                          "pending"
+                        )
+                      }
+                    >
+                      <Clock size={16} />
+                      Pending
+                    </button>
+
+
+                    <button
+                      type="button"
+                      className="btn secondary"
+                      disabled={
+                        updatingId === request.id
+                      }
+                      onClick={() =>
+                        updateStatus(
+                          request.id,
+                          "approved"
+                        )
+                      }
+                    >
+                      <CheckCircle size={16} />
+                      Approved
+                    </button>
+
+
+                    <button
+                      type="button"
+                      className="btn secondary"
+                      disabled={
+                        updatingId === request.id
+                      }
+                      onClick={() =>
+                        updateStatus(
+                          request.id,
+                          "completed"
+                        )
+                      }
+                    >
+                      <CheckCircle size={16} />
+                      Completed
+                    </button>
+
+
+                    <button
+                      type="button"
+                      className="btn secondary"
+                      disabled={
+                        updatingId === request.id
+                      }
+                      onClick={() =>
+                        updateStatus(
+                          request.id,
+                          "rejected"
+                        )
+                      }
+                    >
+                      <XCircle size={16} />
+                      Rejected
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </div>
+
+    </section>
   );
 }
-
-function Box({ children }) {
-  return (
-    <div style={cardStyle}>
-      {children}
-    </div>
-  );
-}
-
-const cardStyle = {
-  background: "#fff",
-  border: "1px solid #ddd8cf",
-  borderRadius: 20,
-  padding: 25,
-};
-
-const buttonStyle = {
-  border: "none",
-  background: "#202d31",
-  color: "#fff",
-  borderRadius: 25,
-  padding: "11px 17px",
-  cursor: "pointer",
-  fontWeight: 700,
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 7,
-};
-
-const selectStyle = {
-  border: "1px solid #d8d3ca",
-  borderRadius: 10,
-  padding: "10px 12px",
-  background: "#fff",
-};
